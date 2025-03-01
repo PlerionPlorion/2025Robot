@@ -81,7 +81,7 @@ public class RobotContainer {
         private final JoystickButton outtakeButton = new JoystickButton(driver,
                         XboxController.Button.kA.value);
         private final JoystickButton intakeButton = new JoystickButton(driver,
-                        XboxController.Button.kB.value);
+                        XboxController.Button.kX.value);
         private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kY.value);
 
         Command manualZeroSubsystems = new ManualZeroElevator(elevator)
@@ -175,7 +175,7 @@ public class RobotContainer {
         }
 
         private void configureAutoSelector() {
-                autoChooser = AutoBuilder.buildAutoChooser("BenEX");
+                autoChooser = AutoBuilder.buildAutoChooser("LeftReefL4");
                 SmartDashboard.putData("Auto Chooser", autoChooser);
         }
 
@@ -193,7 +193,7 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Intake", intakeAuto);
                 NamedCommands.registerCommand("Place Coral",
-                                new InstantCommand(() -> intake.setPosition(Units.Inches.of(20))));
+                                new InstantCommand(() -> intake.setPosition(Units.Inches.of(30))));
 
                 NamedCommands.registerCommand("PlaceSequence",
                                 Commands.sequence(
