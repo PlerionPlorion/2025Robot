@@ -480,7 +480,10 @@ public final class Constants {
         static {
             ELEVATOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             ELEVATOR_CONFIG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
+            // ELEVATOR_CONFIG.CurrentLimits.StatorCurrentLimit = 140;
+            // ELEVATOR_CONFIG.CurrentLimits.SupplyCurrentLimit = 65;
+            // ELEVATOR_CONFIG.CurrentLimits.SupplyCurrentLimitEnable = true;
+            // ELEVATOR_CONFIG.CurrentLimits.StatorCurrentLimitEnable = true;
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Units.Inches.of(72).in(Units.Inches);
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -507,7 +510,7 @@ public final class Constants {
             COAST_MODE_CONFIGURATION.MotorOutput.NeutralMode = NeutralModeValue.Coast;
             COAST_MODE_CONFIGURATION.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         }
-        public static final Distance DEADZONE_DISTANCE = Units.Inches.of(1);
+        public static final Distance DEADZONE_DISTANCE = Units.Inches.of(2);
         public static final double MULTIPLIER_DEADZONE = 0.1;
         public static final int LEFT_MOTOR_FOLLOWER_ID = 13;
         public static final int RIGHT_MOTOR_LEADER_ID = 14;

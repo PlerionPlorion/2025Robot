@@ -26,7 +26,7 @@ public class TeleopIntake extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.setVoltage(0);
-    intake.setPosition(Units.Inches.of(2));
+    intake.setPosition(Units.Inches.of(6));
   }
 
   @Override

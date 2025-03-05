@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     m_robotContainer.setMegaTag2(false);
     if (!hasAutonomousRun) {
-      m_robotContainer.manualZeroSubsystems.schedule();
+      // m_robotContainer.manualZeroSubsystems.schedule();
     }
   }
 
@@ -93,7 +93,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledExit() {
-    m_robotContainer.manualZeroSubsystems.cancel();
+    // m_robotContainer.manualZeroSubsystems.cancel();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Elastic.selectTab("Teleoperated");
+    // Elastic.selectTab("Teleoperated");
     m_robotContainer.setMegaTag2(true);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

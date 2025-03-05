@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -114,6 +115,7 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+                RobotController.setBrownoutVoltage(5.5);
                 configureAutoBindings();
                 s_Swerve.setDefaultCommand(
                                 new TeleopSwerve(
@@ -211,7 +213,7 @@ public class RobotContainer {
                                                 .until(() -> elevator.isAtSetpoint()));
 
                 EventTrigger prepL4 = new EventTrigger("PrepL4");
-                prepL4.onTrue(new InstantCommand(() -> elevator.setPosition(Units.Inches.of(65)))
+                prepL4.onTrue(new InstantCommand(() -> elevator.setPosition(Units.Inches.of(65.25)))
                                 .until(() -> elevator.isAtSetpoint()));
 
                 EventTrigger zeroElevator = new EventTrigger("zeroElevator");

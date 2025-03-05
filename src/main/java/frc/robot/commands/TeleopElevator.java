@@ -18,7 +18,7 @@ public class TeleopElevator extends Command {
   boolean invert;
 
   Command outtake = new SequentialCommandGroup(
-      new InstantCommand(() -> intake.setPosition(Units.Inches.of(2.5))));
+      new InstantCommand(() -> intake.setPosition(Units.Inches.of(3.5))));
 
   /** Creates a new TeleopElevator. */
   public TeleopElevator(Elevator elevator, Intake intake, boolean invert) {
