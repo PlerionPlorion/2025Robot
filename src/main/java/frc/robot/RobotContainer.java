@@ -24,10 +24,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.constVision;
+import frc.robot.Constants.reefPosition;
 import frc.robot.commands.AddVisionMeasurement;
 import frc.robot.commands.TeleopElevator;
+import frc.robot.commands.TeleopElevatorInstant;
 import frc.robot.commands.TeleopIntake;
 import frc.robot.commands.TeleopOuttake;
 import frc.robot.commands.TeleopSwerve;
@@ -84,6 +87,10 @@ public class RobotContainer {
         private final JoystickButton intakeButton = new JoystickButton(driver,
                         XboxController.Button.kX.value);
         private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kY.value);
+        private final POVButton L4 = new POVButton(driver, Constants.POV_UP);
+        private final POVButton L3 = new POVButton(driver, Constants.POV_LEFT);
+        private final POVButton L2 = new POVButton(driver, Constants.POV_RIGHT);
+        private final POVButton NONE = new POVButton(driver, Constants.POV_DOWN);
 
         Command manualZeroSubsystems = new ManualZeroElevator(elevator)
                         .ignoringDisable(true).withName("ManualZeroSubsystems");
@@ -117,6 +124,7 @@ public class RobotContainer {
         public RobotContainer() {
                 RobotController.setBrownoutVoltage(5.5);
                 configureAutoBindings();
+                configureAutoSelector();
                 s_Swerve.setDefaultCommand(
                                 new TeleopSwerve(
                                                 s_Swerve,
@@ -127,8 +135,6 @@ public class RobotContainer {
                                                 () -> robotCentric.getAsBoolean(),
                                                 () -> btn_LeftTrigger.getAsBoolean(),
                                                 () -> btn_RightTrigger.getAsBoolean()));
-
-                configureAutoSelector();
                 // SmartDashboard.putData("Auto Chooser", autoChooser);
                 // Configure the button bindings
                 configureButtonBindings();
@@ -158,6 +164,10 @@ public class RobotContainer {
                                 .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds)));
                 outtakeButton.whileTrue(new TeleopOuttake(intake));
                 intakeButton.whileTrue(new TeleopIntake(intake));
+                L4.onTrue(new TeleopElevatorInstant(elevator, intake, reefPosition.L4));
+                L3.onTrue(new TeleopElevatorInstant(elevator, intake, reefPosition.L3));
+                L2.onTrue(new TeleopElevatorInstant(elevator, intake, reefPosition.L2));
+                NONE.onTrue(new TeleopElevatorInstant(elevator, intake, reefPosition.NONE));
         }
 
         /**

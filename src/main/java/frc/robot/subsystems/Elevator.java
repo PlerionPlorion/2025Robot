@@ -36,8 +36,8 @@ public class Elevator extends SubsystemBase {
   Distance currentLeftPosition = Units.Inches.of(0);
   Distance currentRightPosition = Units.Inches.of(0);
 
-  reefPosition currentReefPos;
-  reefPosition desiredReefPos;
+  public reefPosition currentReefPos = reefPosition.NONE;
+  public reefPosition desiredReefPos = reefPosition.NONE;
 
   @NotLogged
   PositionVoltage positionRequest;
@@ -66,7 +66,6 @@ public class Elevator extends SubsystemBase {
 
     leftMotorFollower.getConfigurator().apply(constElevator.ELEVATOR_CONFIG);
     rightMotorLeader.getConfigurator().apply(constElevator.ELEVATOR_CONFIG);
-    currentReefPos = reefPosition.NONE;
 
     // imagePath = Filesystem.getDeployDirectory().getAbsolutePath() +
     // "/ReefDisplay/image.png";
@@ -164,7 +163,7 @@ public class Elevator extends SubsystemBase {
     // setReefDisplay();
   }
 
-  public void setReefPosition(reefPosition desiredReefPosition) {
+  public void setReefPosition(reefPosition desiredReefPos) {
     setPosition(Units.Inches.of(
         desiredReefPos == reefPosition.NONE ? 0.0
             : desiredReefPos == reefPosition.L1 ? 22.0
@@ -204,10 +203,8 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    if(currentReefPos != null) {
     SmartDashboard.putString("Reef Position", currentReefPos.toString());
-    }
+    SmartDashboard.putNumber("Desired Position", getLastDesiredPosition().magnitude());
 
     // This method will be called once per scheduler run
     currentLeftPosition = Units.Inches.of(leftMotorFollower.getPosition().getValueAsDouble());

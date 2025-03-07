@@ -45,6 +45,10 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final String CAN_BUS_NAME = "*";
     public static final double STICK_DEADBAND = 0.1;
+    public static final int POV_UP = 0;
+    public static final int POV_RIGHT = 90;
+    public static final int POV_DOWN = 180;
+    public static final int POV_LEFT = 270;
 
     public static final class Swerve {
         public static final int PIGEON_ID = 0;
