@@ -92,19 +92,19 @@ public class Limelight extends SubsystemBase {
    *                 indicating new estimates are available.
    */
   public void setCurrentEstimates(AngularVelocity gyroRate) {
-    PoseEstimate currentEstimateRightTest = new PoseEstimate();
-    PoseEstimate currentEstimateLeftTest = new PoseEstimate();
+    // PoseEstimate currentEstimateRightTest = new PoseEstimate();
+    // PoseEstimate currentEstimateLeftTest = new PoseEstimate();
     PoseEstimate currentEstimateRight = new PoseEstimate();
     PoseEstimate currentEstimateLeft = new PoseEstimate();
 
     // if(!constField.isRedAlliance()) {
     if (useMegaTag2) {
-      currentEstimateRightTest = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
-      currentEstimateLeftTest = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
-      currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
+      // currentEstimateRightTest = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
+      // currentEstimateLeftTest = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
+      currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[1]);
       currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
     } else {
-      currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
+      currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[1]);
       currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
     }
   // } else {

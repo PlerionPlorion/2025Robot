@@ -7,7 +7,6 @@ package frc.robot.commands.zeroing;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.constElevator;
 import frc.robot.subsystems.Elevator;
@@ -37,7 +36,7 @@ public class ZeroElevator extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putBoolean("/Elevator/hasZeroed", hasZeroed);
+    // SmartDashboard.putBoolean("/Elevator/hasZeroed", hasZeroed);
     subElevator.setVoltage(constElevator.ZEROING_VOLTAGE);
   }
 

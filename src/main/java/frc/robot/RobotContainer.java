@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.constVision;
 import frc.robot.Constants.reefPosition;
 import frc.robot.commands.AddVisionMeasurement;
-import frc.robot.commands.TeleopElevator;
 import frc.robot.commands.TeleopElevatorInstant;
 import frc.robot.commands.TeleopIntake;
 import frc.robot.commands.TeleopOuttake;
@@ -56,6 +55,7 @@ public class RobotContainer {
         public final Elevator elevator = new Elevator();
         public final Intake intake = new Intake();
         public final Limelight limelight = new Limelight();
+        // public final AlgaeIntake algaeIntake = new AlgaeIntake();
 
         /* PathPlanner */
         @NotLogged
@@ -78,15 +78,20 @@ public class RobotContainer {
         // XboxController.Button.kLeftBumper.value); // Fix to Left Num
         // private final JoystickButton alignRButton = new JoystickButton(driver,
         // XboxController.Button.kRightBumper.value); // Fix to Right Num
-        private final JoystickButton extendElevator = new JoystickButton(driver,
-                        XboxController.Button.kRightBumper.value);
-        private final JoystickButton retractElevator = new JoystickButton(driver,
-                        XboxController.Button.kLeftBumper.value);
+        // private final JoystickButton cleanL2Button = new JoystickButton(driver,
+        //                 XboxController.Button.kRightBumper.value);
+        // private final JoystickButton cleanL3Button = new JoystickButton(driver,
+        //                 XboxController.Button.kLeftBumper.value);
+        // private final JoystickButton algaeZero = new JoystickButton(driver,
+        //                 XboxController.Button.kB.value);
         private final JoystickButton outtakeButton = new JoystickButton(driver,
                         XboxController.Button.kA.value);
         private final JoystickButton intakeButton = new JoystickButton(driver,
                         XboxController.Button.kX.value);
-        private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kY.value);
+        private final JoystickButton zeroSubsystem = new JoystickButton(driver,
+                        XboxController.Button.kY.value);
+        // private final JoystickButton zeroAlgae = new JoystickButton(driver,
+        //                 XboxController.Button.kBack.value);
         private final POVButton L4 = new POVButton(driver, Constants.POV_UP);
         private final POVButton L3 = new POVButton(driver, Constants.POV_LEFT);
         private final POVButton L2 = new POVButton(driver, Constants.POV_RIGHT);
@@ -134,7 +139,7 @@ public class RobotContainer {
                                                 () -> -driver.getRawAxis(rotationAxis),
                                                 () -> robotCentric.getAsBoolean(),
                                                 () -> btn_LeftTrigger.getAsBoolean(),
-                                                () -> btn_RightTrigger.getAsBoolean()));
+                                                () -> btn_RightTrigger.getAsBoolean()).ignoringDisable(true));
                 // SmartDashboard.putData("Auto Chooser", autoChooser);
                 // Configure the button bindings
                 configureButtonBindings();
@@ -156,14 +161,18 @@ public class RobotContainer {
                                 () -> s_Swerve.resetOdometry(Constants.constField.getFieldPositions().get()[0])));
                 // alignRButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, true));
                 // alignLButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, false));
-                extendElevator.onTrue(new TeleopElevator(elevator, intake, false)
-                                .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-                retractElevator.onTrue(new TeleopElevator(elevator, intake, true)
-                                .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-                zeroSubsystem.onTrue(new ZeroElevator(elevator)
-                                .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds)));
+                // extendElevator.onTrue(new TeleopElevator(elevator, intake, false)
+                // .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+                // retractElevator.onTrue(new TeleopElevator(elevator, intake, true)
+                // .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+                zeroSubsystem.onTrue(new ParallelCommandGroup(new ZeroElevator(elevator)
+                                .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds))));
+                // zeroAlgae.onTrue(new ZeroAlgaeIntake(algaeIntake)
+                                // .withTimeout(constAlgaeIntake.ZEROING_TIMEOUT.in(Units.Seconds)));
                 outtakeButton.whileTrue(new TeleopOuttake(intake));
                 intakeButton.whileTrue(new TeleopIntake(intake));
+                // cleanL2Button.onTrue(new CleanL2Reef(elevator, algaeIntake));
+                // algaeZero.onTrue(new AlgaeZero(elevator, algaeIntake));
                 L4.onTrue(new TeleopElevatorInstant(elevator, intake, reefPosition.L4));
                 L3.onTrue(new TeleopElevatorInstant(elevator, intake, reefPosition.L3));
                 L2.onTrue(new TeleopElevatorInstant(elevator, intake, reefPosition.L2));

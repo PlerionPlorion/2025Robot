@@ -39,6 +39,8 @@ public class AddVisionMeasurement extends Command {
       // Tells the limelight where we are on the field
       LimelightHelpers.SetRobotOrientation(constVision.LIMELIGHT_NAMES[0],
           swerve.getPoseEstimator().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(constVision.LIMELIGHT_NAMES[1],
+          swerve.getPoseEstimator().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       AngularVelocity gyroRate = Units.DegreesPerSecond.of(swerve.getGyroRate());
 
       Optional<PoseEstimate> estimatedPose = limelight.determinePoseEstimate(gyroRate);

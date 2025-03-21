@@ -10,7 +10,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.constField;
@@ -58,7 +57,7 @@ public class TeleopSwerve extends Command {
         // SmartDashboard.putNumber("Translation", translationVal);
         // SmartDashboard.putNumber("Strafe", strafeVal);
         // SmartDashboard.putNumber("Rotation", rotationVal);
-        SmartDashboard.putNumber("Elevator/Elevator Multiplier", elevatorMultiplier);
+        // SmartDashboard.putNumber("Elevator/Elevator Multiplier", elevatorMultiplier);
 
         // -- Velocities --
         LinearVelocity xVelocity = Units.MetersPerSecond.of(translationVal * elevatorMultiplier);
@@ -138,8 +137,10 @@ public class TeleopSwerve extends Command {
                     Constants.Swerve.TELEOP_AUTO_ALIGN.MAX_AUTO_DRIVE_REEF_DISTANCE);
             ;
             LimelightHelpers.setLEDMode_ForceOn(Constants.constVision.LIMELIGHT_NAMES[0]);
+            LimelightHelpers.setLEDMode_ForceOn(Constants.constVision.LIMELIGHT_NAMES[1]);
         } else {
             LimelightHelpers.setLEDMode_ForceOff(Constants.constVision.LIMELIGHT_NAMES[0]);
+            LimelightHelpers.setLEDMode_ForceOff(Constants.constVision.LIMELIGHT_NAMES[1]);
             /* Drive */
             s_Swerve.drive(
                     new Translation2d(xVelocity.times(redAllianceMultiplier).in(Units.MetersPerSecond), yVelocity.times(redAllianceMultiplier).in(Units.MetersPerSecond)).times(Constants.Swerve.MAX_SPEED)

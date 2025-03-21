@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -32,6 +33,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
@@ -148,7 +150,6 @@ public final class Constants {
         public static final double MEASUREMENT_STD_DEV_HEADING = Units.Radians.convertFrom(5, Units.Degrees);
 
         public static class TELEOP_AUTO_ALIGN {
-            // TODO: Test if this actually works LOL
             public static final LinearVelocity DESIRED_AUTO_ALIGN_SPEED = Units.MetersPerSecond
                     .of(MAX_SPEED_UNITS.in(MetersPerSecond) / 4);
 
@@ -400,7 +401,7 @@ public final class Constants {
 
     /* Vision Constants */
     public static class constVision {
-        public static final String[] LIMELIGHT_NAMES = new String[] { "limelight-front", "limelight-back" };
+        public static final String[] LIMELIGHT_NAMES = new String[] { "limelight-left", "limelight-right" };
 
         /**
          * <p>
@@ -441,7 +442,16 @@ public final class Constants {
         public static final double AREA_THRESHOLD = 0.2;
 
         // The below values are accounted for in the limelight interface, NOT in code
-        public static class LIMELIGHT_FRONT {
+        public static class LIMELIGHT_RIGHT {
+            public static final Distance LL_FORWARD = Units.Meters.of(0.2921);
+            public static final Distance LL_RIGHT = Units.Meters.of(0.274);
+            public static final Distance LL_UP = Units.Meters.of(0.2032);
+
+            public static final Angle LL_ROLL = Units.Degrees.of(180);
+            public static final Angle LL_PITCH = Units.Degrees.of(15);
+            public static final Angle LL_YAW = Units.Degrees.of(40);
+        }
+        public static class LIMELIGHT_LEFT {
             public static final Distance LL_FORWARD = Units.Meters.of(0.2921);
             public static final Distance LL_RIGHT = Units.Meters.of(-0.274);
             public static final Distance LL_UP = Units.Meters.of(0.2032);
@@ -479,6 +489,105 @@ public final class Constants {
         public static final double INTAKE_VOLTAGE = -3;
     }
 
+    public static class constAlgaeIntake {
+
+        public static final int INTAKE_ROLLER_MOTOR_CAN = 41;
+        public static final int INTAKE_PIVOT_MOTOR_CAN = 40;
+
+        public static final double ALGAE_INTAKE_SPEED = 1;
+        public static final double ALGAE_OUTTAKE_SPEED = -0.5;
+
+        public static final Angle INTAKE_DEADZONE_DISTANCE = Units.Degrees.of(1); // TODO: Tune this
+
+        /**
+         * The velocity that the motor goes at once it has zeroed (and can no longer
+         * continue in that direction)
+         */
+        public static final AngularVelocity ZEROED_VELOCITY = Units.RotationsPerSecond.of(0.2);
+
+        public static final Angle MAX_POS = Units.Degrees.of(20);
+        public static final Angle MIN_POS = Units.Degrees.of(-110);
+        public static final Angle ZERO_POS = Units.Degrees.of(0);
+
+        /**
+         * The elapsed time required to consider the motor as zeroed
+         */
+        public static final Time ZEROED_TIME = Units.Seconds.of(1);
+
+        public static final Voltage ZEROING_VOLTAGE = Units.Volts.of(1);
+
+        public static final double HOLD_ALGAE_INTAKE_VOLTAGE = 1;
+        public static final TalonFXSConfiguration ALGAE_ROLLER_CONFIG = new TalonFXSConfiguration();
+        public static final TalonFXConfiguration ALGAE_PIVOT_CONFIG = new TalonFXConfiguration();
+        static {
+            ALGAE_ROLLER_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            ALGAE_ROLLER_CONFIG.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            ALGAE_PIVOT_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            ALGAE_PIVOT_CONFIG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+            ALGAE_ROLLER_CONFIG.CurrentLimits.SupplyCurrentLimitEnable = true;
+            ALGAE_ROLLER_CONFIG.CurrentLimits.SupplyCurrentLowerLimit = 30;
+            ALGAE_ROLLER_CONFIG.CurrentLimits.SupplyCurrentLimit = 60;
+            ALGAE_ROLLER_CONFIG.CurrentLimits.SupplyCurrentLowerTime = 0.5;
+
+            ALGAE_PIVOT_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+            ALGAE_PIVOT_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAX_POS.in(Units.Rotations);
+            ALGAE_PIVOT_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+            ALGAE_PIVOT_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MIN_POS.in(Units.Rotations);
+
+            // Why don't scientists trust atoms? Because they make up everything!
+            // Why do crabs never share their things? - Because they are shellfish!
+
+            ALGAE_ROLLER_CONFIG.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
+
+            ALGAE_PIVOT_CONFIG.Feedback.SensorToMechanismRatio = 48/16;
+
+            ALGAE_PIVOT_CONFIG.Slot0.kG = -7; // Volts to overcome gravity
+            ALGAE_PIVOT_CONFIG.Slot0.kS = 0.2; // Volts to overcome static friction
+            ALGAE_PIVOT_CONFIG.Slot0.kV = 0.0; // Volts for a velocity target of 1 rps
+            ALGAE_PIVOT_CONFIG.Slot0.kA = 0.0; // Volts for an acceleration of 1 rps/s
+            ALGAE_PIVOT_CONFIG.Slot0.kP = 20;
+            ALGAE_PIVOT_CONFIG.Slot0.kI = 0.0;
+            ALGAE_PIVOT_CONFIG.Slot0.kD = 0.00;
+            ALGAE_PIVOT_CONFIG.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+            ALGAE_PIVOT_CONFIG.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+            ALGAE_PIVOT_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 40;
+            ALGAE_PIVOT_CONFIG.MotionMagic.MotionMagicAcceleration = 2100;
+
+            ALGAE_PIVOT_CONFIG.CurrentLimits.SupplyCurrentLimitEnable = true;
+            ALGAE_PIVOT_CONFIG.CurrentLimits.SupplyCurrentLowerLimit = 30;
+            ALGAE_PIVOT_CONFIG.CurrentLimits.SupplyCurrentLimit = 45;
+            ALGAE_PIVOT_CONFIG.CurrentLimits.SupplyCurrentLowerTime = 0.5;
+        }
+
+        public static final Distance REQUIRED_ALGAE_DISTANCE = Units.Inches.of(2);
+
+        public static final AngularVelocity ALGAE_INTAKE_HAS_GP_VELOCITY = Units.RotationsPerSecond.of(2102 / 60);
+
+        public static final Current ALGAE_INTAKE_HAS_GP_CURRENT = Units.Amps.of(15);
+
+        public static final Angle CLEANING_REEF_L2_PIVOT_POSITION = Units.Degrees.of(40);
+        public static final Angle CLEANING_REEF_L3_PIVOT_POSITION = Units.Degrees.of(40);
+
+        public static final Angle INTAKE_ALGAE_GROUND_PIVOT_POSITION = Units.Degrees.of(-31);
+        public static final Angle PREP_ALGAE_ZERO_PIVOT_POSITION = Units.Degrees.of(-30);
+        public static final Angle PREP_NET_PIVOT_POSITION = Units.Degrees.of(55);
+        public static final Angle PREP_PROCESSOR_PIVOT_POSITION = Units.Degrees.of(2);
+        public static final Angle PREP_PROCESSOR_POS_WITH_CORAL = Units.Degrees.of(14);
+        public static final Angle EJECT_ALGAE_PIVOT_POSITION = Units.Degrees.of(15);
+
+        public static final Angle CLIMB_DEPLOY_POSITION = MIN_POS;
+
+        public static final Time ZEROING_TIMEOUT = Units.Seconds.of(3);
+
+        public static final AngularVelocity MANUAL_ZEROING_START_VELOCITY = Units.RotationsPerSecond.of(5);
+        public static final AngularVelocity MANUAL_ZEROING_DELTA_VELOCITY = Units.RotationsPerSecond.of(5);
+
+        public static final Angle DEADZONE_DISTANCE = Units.Degrees.of(1);
+
+    }
+
     public static class constElevator {
         public static TalonFXConfiguration ELEVATOR_CONFIG = new TalonFXConfiguration();
         static {
@@ -503,11 +612,12 @@ public final class Constants {
             ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             ELEVATOR_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
             ELEVATOR_CONFIG.Slot0.kP = 1.3;
-            ELEVATOR_CONFIG.Slot0.kI = 0.001;
-            ELEVATOR_CONFIG.Slot0.kD = 0.1;
+            ELEVATOR_CONFIG.Slot0.kI = 0;
+            ELEVATOR_CONFIG.Slot0.kD = 0;
 
-            ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
+            ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 800;
             ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 500;
+            ELEVATOR_CONFIG.MotionMagic.MotionMagicExpo_kV = 0.1;
         }
         public static TalonFXConfiguration COAST_MODE_CONFIGURATION = new TalonFXConfiguration();
         static {
@@ -543,6 +653,9 @@ public final class Constants {
          */
         public static final Time ZEROED_TIME = Units.Seconds.of(1);
         public static final Time ZEROING_TIMEOUT = Units.Seconds.of(3);
+
+        public static final Distance ALGAE_L3_CLEANING = Units.Inches.of(25);
+        public static final Distance ALGAE_L2_CLEANING = Units.Inches.of(9);
     }
 
     public enum reefPosition {

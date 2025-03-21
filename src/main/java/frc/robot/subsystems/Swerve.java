@@ -149,6 +149,7 @@ public class Swerve extends SubsystemBase {
     // }
     // }
 
+    @SuppressWarnings("removal")
     public double getGyroRate() {
         return gyro.getRate();
     }
@@ -286,6 +287,7 @@ public class Swerve extends SubsystemBase {
         desiredAlignmentPose = desiredTarget;
         int redAllianceMultiplier = constField.isRedAlliance() ? -1 : 1;
         LimelightHelpers.setLEDMode_ForceOn(Constants.constVision.LIMELIGHT_NAMES[0]);
+        LimelightHelpers.setLEDMode_ForceOn(Constants.constVision.LIMELIGHT_NAMES[1]);
 
         if (distanceFromTarget.gte(maxAutoDriveDistance)) {
             // Rotational-only auto-align
@@ -393,11 +395,11 @@ public class Swerve extends SubsystemBase {
         updateTimer();
         updatePoseEstimator();
         limelightPosePublisher.set(getPoseEstimator());
-        desiredAlignmentPosePublisher.set(desiredAlignmentPose);
+        // desiredAlignmentPosePublisher.set(desiredAlignmentPose);
         // desiredStatesPublisher.set(getModuleStates());
         actualStatesPublisher.set(getModuleStates());
         // swerveOdometry.update(getGyroYaw(), getModulePositions());
-        SmartDashboard.putBoolean("isAligned", isAligned());
+        // SmartDashboard.putBoolean("isAligned", isAligned());
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
