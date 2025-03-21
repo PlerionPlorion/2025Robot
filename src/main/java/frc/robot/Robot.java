@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
   public static final CTREConfigs ctreConfigs = new CTREConfigs();
   
   private Command m_autonomousCommand;
+  // private Command m_warmUpCommand;
 
   private RobotContainer m_robotContainer;
   boolean hasAutonomousRun = false;
@@ -43,6 +44,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    // m_warmUpCommand = m_robotContainer.getWarmUpCommand();
+    //   Commands.deferredProxy(() -> m_warmUpCommand).schedule();
+    //   m_warmUpCommand.cancel();
 
     // Set out log file to be in its own folder
     if (Robot.isSimulation()) {
@@ -59,6 +63,7 @@ public class Robot extends TimedRobot {
     // PathPlanner Warmup
     FollowPathCommand.warmupCommand();
     System.out.println("PathPlanner Warmed");
+    teleopInit();
   }
 
   /**

@@ -36,7 +36,12 @@
       "name": "PrepL4",
       "waypointRelativePos": 0.8308996702779083,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepL4"
+        }
+      }
     }
   ],
   "globalConstraints": {

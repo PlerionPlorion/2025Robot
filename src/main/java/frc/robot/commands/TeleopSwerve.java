@@ -10,6 +10,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.constField;
@@ -43,11 +44,13 @@ public class TeleopSwerve extends Command {
 
     @Override
     public void initialize() {
-        redAllianceMultiplier = constField.isRedAlliance() ? -1 : 1;
+        
     }
 
     @Override
     public void execute() {
+        redAllianceMultiplier = constField.isRedAlliance() ? -1 : 1;
+        SmartDashboard.putBoolean("isRedAlliance", constField.isRedAlliance());
         elevatorMultiplier = MathUtil.clamp(1 - MathUtil.applyDeadband(elevator.getElevatorPosition().magnitude() / 60,
                 Constants.constElevator.MULTIPLIER_DEADZONE), 0.35, 1);
         /* Get Values, Deadband */
@@ -63,8 +66,7 @@ public class TeleopSwerve extends Command {
         LinearVelocity xVelocity = Units.MetersPerSecond.of(translationVal * elevatorMultiplier);
         LinearVelocity yVelocity = Units.MetersPerSecond.of(strafeVal * elevatorMultiplier);
         AngularVelocity rVelocity = Units.RadiansPerSecond
-                .of(-rotationSup.getAsDouble() * Constants.Swerve.TURN_SPEED.in(Units.RadiansPerSecond)
-                        * elevatorMultiplier);
+                .of(-rotationSup.getAsDouble() * Constants.Swerve.TURN_SPEED.in(Units.RadiansPerSecond));
 
         // // -- Coral Station --
         // if (leftCoralStationFar.getAsBoolean()) {

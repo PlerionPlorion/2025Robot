@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.events.EventTrigger;
 
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
@@ -79,11 +78,11 @@ public class RobotContainer {
         // private final JoystickButton alignRButton = new JoystickButton(driver,
         // XboxController.Button.kRightBumper.value); // Fix to Right Num
         // private final JoystickButton cleanL2Button = new JoystickButton(driver,
-        //                 XboxController.Button.kRightBumper.value);
+        // XboxController.Button.kRightBumper.value);
         // private final JoystickButton cleanL3Button = new JoystickButton(driver,
-        //                 XboxController.Button.kLeftBumper.value);
+        // XboxController.Button.kLeftBumper.value);
         // private final JoystickButton algaeZero = new JoystickButton(driver,
-        //                 XboxController.Button.kB.value);
+        // XboxController.Button.kB.value);
         private final JoystickButton outtakeButton = new JoystickButton(driver,
                         XboxController.Button.kA.value);
         private final JoystickButton intakeButton = new JoystickButton(driver,
@@ -91,7 +90,7 @@ public class RobotContainer {
         private final JoystickButton zeroSubsystem = new JoystickButton(driver,
                         XboxController.Button.kY.value);
         // private final JoystickButton zeroAlgae = new JoystickButton(driver,
-        //                 XboxController.Button.kBack.value);
+        // XboxController.Button.kBack.value);
         private final POVButton L4 = new POVButton(driver, Constants.POV_UP);
         private final POVButton L3 = new POVButton(driver, Constants.POV_LEFT);
         private final POVButton L2 = new POVButton(driver, Constants.POV_RIGHT);
@@ -129,7 +128,6 @@ public class RobotContainer {
         public RobotContainer() {
                 RobotController.setBrownoutVoltage(5.5);
                 configureAutoBindings();
-                configureAutoSelector();
                 s_Swerve.setDefaultCommand(
                                 new TeleopSwerve(
                                                 s_Swerve,
@@ -139,11 +137,11 @@ public class RobotContainer {
                                                 () -> -driver.getRawAxis(rotationAxis),
                                                 () -> robotCentric.getAsBoolean(),
                                                 () -> btn_LeftTrigger.getAsBoolean(),
-                                                () -> btn_RightTrigger.getAsBoolean()).ignoringDisable(true));
+                                                () -> btn_RightTrigger.getAsBoolean()));
                 // SmartDashboard.putData("Auto Chooser", autoChooser);
                 // Configure the button bindings
                 configureButtonBindings();
-
+                configureAutoSelector();
         }
 
         /**
@@ -168,7 +166,7 @@ public class RobotContainer {
                 zeroSubsystem.onTrue(new ParallelCommandGroup(new ZeroElevator(elevator)
                                 .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds))));
                 // zeroAlgae.onTrue(new ZeroAlgaeIntake(algaeIntake)
-                                // .withTimeout(constAlgaeIntake.ZEROING_TIMEOUT.in(Units.Seconds)));
+                // .withTimeout(constAlgaeIntake.ZEROING_TIMEOUT.in(Units.Seconds)));
                 outtakeButton.whileTrue(new TeleopOuttake(intake));
                 intakeButton.whileTrue(new TeleopIntake(intake));
                 // cleanL2Button.onTrue(new CleanL2Reef(elevator, algaeIntake));
@@ -195,8 +193,19 @@ public class RobotContainer {
                 // return null;
         }
 
+        public Command getWarmUpCommand() {
+                return AutoBuilder.buildAuto("Taxi");
+                // try{
+                // PathPlannerPath path = PathPlannerPath.fromPathFile("2025");
+                // return AutoBuilder.followPath(path);
+                // } catch (Exception e) {
+                // return Commands.none();
+                // }
+                // return null;
+        }
+
         private void configureAutoSelector() {
-                autoChooser = AutoBuilder.buildAutoChooser("LeftReefL4");
+                autoChooser = AutoBuilder.buildAutoChooser("Taxi");
                 SmartDashboard.putData("Auto Chooser", autoChooser);
         }
 
@@ -209,37 +218,39 @@ public class RobotContainer {
 
                 Command intakeAuto = new SequentialCommandGroup(
                                 new InstantCommand(() -> intake.setVoltage(Constants.constIntake.INTAKE_VOLTAGE))
-                                                .withTimeout(3),
-                                new InstantCommand(() -> intake.setPosition(Units.Inches.of(3))));
+                                                .withTimeout(3))
+                                .andThen(new InstantCommand(() -> intake.setVoltage(0)));
 
-                NamedCommands.registerCommand("Intake", intakeAuto);
-                NamedCommands.registerCommand("Place Coral",
-                                new InstantCommand(() -> intake.setPosition(Units.Inches.of(30))));
+                NamedCommands.registerCommand("Intake", new TeleopIntake(intake).withTimeout(2));
+                NamedCommands.registerCommand("Place Coral", new TeleopOuttake(intake).withTimeout(0.5));
 
                 NamedCommands.registerCommand("PlaceSequence",
                                 Commands.sequence(
                                                 driveAutoAlignLeft.asProxy().until(() -> s_Swerve.isAligned())
-                                                                .withTimeout(2),
+                                                                .withTimeout(1)
+                                                                .andThen(new ParallelCommandGroup(new InstantCommand(
+                                                                                () -> LimelightHelpers
+                                                                                                .setLEDMode_ForceOff(
+                                                                                                                Constants.constVision.LIMELIGHT_NAMES[0])),
+                                                                                new InstantCommand(
+                                                                                                () -> LimelightHelpers
+                                                                                                                .setLEDMode_ForceOff(
+                                                                                                                                Constants.constVision.LIMELIGHT_NAMES[1])))),
                                                 Commands.runOnce(
                                                                 () -> s_Swerve.autoDrive(new ChassisSpeeds(), false))));
 
-                NamedCommands.registerCommand("zeroElevator", new SequentialCommandGroup(
-                                new InstantCommand(() -> elevator.setPosition(Units.Inches.of(0)))
-                                                .until(() -> elevator.isAtSetpoint()).withTimeout(1),
-                                new ZeroElevator(elevator)));
+                NamedCommands.registerCommand("zeroElevator",
+                                new TeleopElevatorInstant(elevator, intake, reefPosition.NONE).withTimeout(1.5));
                 NamedCommands.registerCommand("PrepL4",
-                                new InstantCommand(() -> elevator.setPosition(Units.Inches.of(65)))
-                                                .until(() -> elevator.isAtSetpoint()));
+                                new TeleopElevatorInstant(elevator, intake, reefPosition.L4).withTimeout(1.5));
 
-                EventTrigger prepL4 = new EventTrigger("PrepL4");
-                prepL4.onTrue(new InstantCommand(() -> elevator.setPosition(Units.Inches.of(65.25)))
-                                .until(() -> elevator.isAtSetpoint()));
+                // EventTrigger prepL4 = new EventTrigger("PrepL4");
+                // prepL4.onTrue(new TeleopElevatorInstant(elevator, intake,
+                // reefPosition.L4).withTimeout(1.5));
 
-                EventTrigger zeroElevator = new EventTrigger("zeroElevator");
-                zeroElevator.onTrue(new SequentialCommandGroup(
-                                new InstantCommand(() -> elevator.setPosition(Units.Inches.of(0)))
-                                                .until(() -> elevator.isAtSetpoint()).withTimeout(1),
-                                new ZeroElevator(elevator)));
+                // EventTrigger zeroElevator = new EventTrigger("zeroElevator");
+                // zeroElevator.onTrue(new TeleopElevatorInstant(elevator, intake,
+                // reefPosition.NONE).withTimeout(1.5));
         }
 
         public void resetToAutoPose() {

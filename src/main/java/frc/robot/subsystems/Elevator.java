@@ -165,7 +165,7 @@ public class Elevator extends SubsystemBase {
 
   public void setReefPosition(reefPosition desiredReefPos) {
     setPosition(Units.Inches.of(
-        desiredReefPos == reefPosition.NONE ? 0.0
+        desiredReefPos == reefPosition.NONE ? -0.5
             : desiredReefPos == reefPosition.L1 ? 22.0
                 : desiredReefPos == reefPosition.L2 ? 29.5
                     : desiredReefPos == reefPosition.L3 ? 43.5

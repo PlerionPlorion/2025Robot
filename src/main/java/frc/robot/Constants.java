@@ -486,7 +486,7 @@ public final class Constants {
         }
         public static final int MOTOR_ID = 17;
         public static final double OUTTAKE_VOLTAGE = 3;
-        public static final double INTAKE_VOLTAGE = -3;
+        public static final double INTAKE_VOLTAGE = 2;
     }
 
     public static class constAlgaeIntake {
@@ -600,7 +600,7 @@ public final class Constants {
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Units.Inches.of(72).in(Units.Inches);
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-            ELEVATOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Units.Inches.of(0)
+            ELEVATOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Units.Inches.of(-0.5)
                     .in(Units.Inches);
 
             ELEVATOR_CONFIG.Slot0.GravityType = GravityTypeValue.Elevator_Static;
@@ -608,16 +608,16 @@ public final class Constants {
             ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.343; // 17 inches to ground
 
             ELEVATOR_CONFIG.Slot0.kG = 0.75; // Volts to overcome gravity
-            ELEVATOR_CONFIG.Slot0.kS = 0.5; // Volts to overcome static friction
-            ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
+            ELEVATOR_CONFIG.Slot0.kS = 0.6; // Volts to overcome static friction
+            // ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             ELEVATOR_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
             ELEVATOR_CONFIG.Slot0.kP = 1.3;
             ELEVATOR_CONFIG.Slot0.kI = 0;
             ELEVATOR_CONFIG.Slot0.kD = 0;
 
-            ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 800;
+            ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 0;
             ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 500;
-            ELEVATOR_CONFIG.MotionMagic.MotionMagicExpo_kV = 0.1;
+            ELEVATOR_CONFIG.MotionMagic.MotionMagicExpo_kV = 0.001;
         }
         public static TalonFXConfiguration COAST_MODE_CONFIGURATION = new TalonFXConfiguration();
         static {
