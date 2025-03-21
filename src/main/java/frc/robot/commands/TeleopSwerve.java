@@ -44,12 +44,11 @@ public class TeleopSwerve extends Command {
 
     @Override
     public void initialize() {
-        
+                redAllianceMultiplier = constField.isRedAlliance() ? -1 : 1;
     }
 
     @Override
     public void execute() {
-        redAllianceMultiplier = constField.isRedAlliance() ? -1 : 1;
         SmartDashboard.putBoolean("isRedAlliance", constField.isRedAlliance());
         elevatorMultiplier = MathUtil.clamp(1 - MathUtil.applyDeadband(elevator.getElevatorPosition().magnitude() / 60,
                 Constants.constElevator.MULTIPLIER_DEADZONE), 0.35, 1);
@@ -66,7 +65,7 @@ public class TeleopSwerve extends Command {
         LinearVelocity xVelocity = Units.MetersPerSecond.of(translationVal * elevatorMultiplier);
         LinearVelocity yVelocity = Units.MetersPerSecond.of(strafeVal * elevatorMultiplier);
         AngularVelocity rVelocity = Units.RadiansPerSecond
-                .of(-rotationSup.getAsDouble() * Constants.Swerve.TURN_SPEED.in(Units.RadiansPerSecond));
+                .of(-rotationSup.getAsDouble() * Constants.Swerve.TURN_SPEED.in(Units.RadiansPerSecond)*elevatorMultiplier);
 
         // // -- Coral Station --
         // if (leftCoralStationFar.getAsBoolean()) {
@@ -147,7 +146,7 @@ public class TeleopSwerve extends Command {
             s_Swerve.drive(
                     new Translation2d(xVelocity.times(redAllianceMultiplier).in(Units.MetersPerSecond), yVelocity.times(redAllianceMultiplier).in(Units.MetersPerSecond)).times(Constants.Swerve.MAX_SPEED)
                             .times(elevatorMultiplier),
-                    rotationVal * Constants.Swerve.MAX_ANGULAR_VELOCITY * elevatorMultiplier,
+                    rotationVal * Constants.Swerve.MAX_ANGULAR_VELOCITY,
                     !robotCentricSup.getAsBoolean(),
                     true);
         }
