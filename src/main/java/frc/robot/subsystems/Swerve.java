@@ -55,7 +55,7 @@ public class Swerve extends SubsystemBase {
         gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.CAN_BUS_NAME);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         // The absolute encoders need time to initialize
-        // Timer.delay(2.5);
+        Timer.delay(2.5);
         // if (!constField.isRedAlliance()) {
         // gyro.setYaw(180);
         // } else {
